@@ -1,15 +1,18 @@
 package com.example.booking.bootstrap;
 
 import com.example.booking.entity.AccommodationType;
+import com.example.booking.entity.EventType;
 import com.example.booking.entity.Unit;
 import com.example.booking.repository.UnitRepository;
+import com.example.booking.service.EventService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @RequiredArgsConstructor
@@ -18,18 +21,23 @@ public class RandomUnitsLoader {
     private static final int UNITS_TO_CREATE = 90;
 
     private final UnitRepository unitRepository;
-    private final Random random = new Random();
+    private final EventService eventService;
 
     @EventListener(ApplicationReadyEvent.class)
+    @Transactional
     public void load() {
-        long existing = unitRepository.count();
-
-        if (existing >= UNITS_TO_CREATE) {
-            return; // already initialized
+        if (unitRepository.count() >= UNITS_TO_CREATE) {
+            return;
         }
 
         for (int i = 0; i < UNITS_TO_CREATE; i++) {
-            unitRepository.save(randomUnit());
+            var unit = randomUnit();
+            unitRepository.save(unit);
+
+            eventService.log(
+                    EventType.UNIT_CREATED,
+                    "Random unit created (id=" + unit.getId() + ")"
+            );
         }
     }
 
@@ -47,7 +55,7 @@ public class RandomUnitsLoader {
     }
 
     private int randomInt(int min, int max) {
-        return random.nextInt(max - min + 1) + min;
+        return ThreadLocalRandom.current().nextInt(max - min + 1) + min;
     }
 
     private BigDecimal randomCost() {
@@ -57,7 +65,7 @@ public class RandomUnitsLoader {
 
     private AccommodationType randomAccommodationType() {
         AccommodationType[] values = AccommodationType.values();
-        return values[random.nextInt(values.length)];
+        return values[ThreadLocalRandom.current().nextInt(values.length)];
     }
 
     private String randomDescription() {

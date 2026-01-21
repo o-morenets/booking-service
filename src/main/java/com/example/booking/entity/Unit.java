@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -30,4 +31,7 @@ public class Unit {
     private String description;
 
     private boolean active = true;
+
+    @OneToMany(mappedBy = "unit")
+    private List<Booking> bookings;
 }

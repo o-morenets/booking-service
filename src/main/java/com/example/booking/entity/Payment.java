@@ -33,5 +33,7 @@ public class Payment {
 
     private boolean successful;
 
+    private Instant createdAt;
+
     private Instant paidAt;
 }

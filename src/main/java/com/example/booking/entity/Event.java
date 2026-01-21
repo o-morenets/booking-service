@@ -1,9 +1,6 @@
 package com.example.booking.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +17,9 @@ public class Event {
     @GeneratedValue
     private UUID id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private EventType type;
+
     private String payload;
 
     private Instant createdAt;

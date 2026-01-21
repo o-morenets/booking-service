@@ -106,6 +106,9 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamp
 
         - addForeignKeyConstraint:
             baseTableName: bookings
@@ -150,6 +153,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: created_at
+                  type: timestamp
+              - column:
                   name: paid_at
                   type: timestamp
 
@@ -189,7 +195,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 006-insert-initial-units
-      author: booking-system
+      author: Oleksii Morenets
       changes:
         - sql:
             sql: |
@@ -208,7 +214,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 007-insert-unit-events
-      author: booking-system
+      author: Oleksii Morenets
       changes:
         - sql:
             sql: |

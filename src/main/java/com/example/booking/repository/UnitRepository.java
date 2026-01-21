@@ -2,11 +2,12 @@ package com.example.booking.repository;
 
 import com.example.booking.entity.Unit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.UUID;
 
-public interface UnitRepository extends JpaRepository<Unit, UUID> {
+public interface UnitRepository extends JpaRepository<Unit, UUID>, JpaSpecificationExecutor<Unit> {
 
     @Query("""
         SELECT COUNT(u)

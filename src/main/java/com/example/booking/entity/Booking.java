@@ -26,10 +26,13 @@ public class Booking {
     private User user;
 
     private LocalDate startDate;
+
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     private Instant createdAt;
+
+    private Instant expiresAt;
 }
