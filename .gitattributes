@@ -1,0 +1,11 @@
+# Unix Gradle wrapper
+gradlew text eol=lf
+
+# Windows Gradle wrapper
+gradlew.bat text eol=crlf
+
+# Gradle wrapper config
+gradle/wrapper/gradle-wrapper.properties text eol=lf
+
+# Binary wrapper JAR
+gradle/wrapper/gradle-wrapper.jar binary
