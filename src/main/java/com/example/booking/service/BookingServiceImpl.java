@@ -78,8 +78,8 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
-        if (booking.getStatus() == PAID) {
-            throw new IllegalStateException("Paid booking cannot be cancelled");
+        if (booking.getStatus() != PENDING_PAYMENT) {
+            throw new IllegalStateException("Only bookings with status PENDING_PAYMENT can be cancelled");
         }
 
         booking.setStatus(CANCELLED);

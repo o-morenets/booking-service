@@ -52,7 +52,7 @@ public class UnitServiceImpl implements UnitService {
 
         cacheService.incrementAvailableUnits();
 
-        return toResponse(saved);
+        return UnitResponse.from(saved, paymentProperties.getMarkup());
     }
 
     @Override
@@ -83,15 +83,16 @@ public class UnitServiceImpl implements UnitService {
             }
 
             if (maxCost != null) {
-                predicate = cb.and(
-                        predicate,
-                        cb.lessThanOrEqualTo(
-                                root.get("baseCost"),
-                                maxCost.subtract(
-                                        maxCost.multiply(paymentProperties.getMarkup())
-                                )
+                // baseCost + baseCost * markup <= maxCost
+                // e.i.
+                // baseCost * (1 + markup) <= maxCost
+                predicate = cb.and(predicate, cb.lessThanOrEqualTo(cb.prod(
+                        root.get("baseCost"),
+                        cb.sum(
+                                cb.literal(BigDecimal.ONE),
+                                cb.literal(paymentProperties.getMarkup())
                         )
-                );
+                ), maxCost));
             }
 
             if (startDate != null && endDate != null) {
@@ -117,22 +118,11 @@ public class UnitServiceImpl implements UnitService {
 
         return unitRepository
                 .findAll(spec, pageable)
-                .map(this::toResponse);
+                .map(unit -> UnitResponse.from(unit, paymentProperties.getMarkup()));
     }
 
     @Override
     public long getAvailableUnitsCount() {
         return cacheService.getAvailableUnitsCount();
-    }
-
-    private UnitResponse toResponse(Unit unit) {
-        return new UnitResponse(
-                unit.getId(),
-                unit.getRooms(),
-                unit.getType().name(),
-                unit.getFloor(),
-                unit.getBaseCost().add(unit.getBaseCost().multiply(paymentProperties.getMarkup())),
-                unit.getDescription()
-        );
     }
 }
