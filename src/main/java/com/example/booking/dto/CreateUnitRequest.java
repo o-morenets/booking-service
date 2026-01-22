@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public record CreateUnitRequest(
         int rooms,
-        String type,      // HOME | FLAT | APARTMENTS
+        String type,
         int floor,
         BigDecimal baseCost,
         String description

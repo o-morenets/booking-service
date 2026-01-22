@@ -56,12 +56,6 @@ databaseChangeLog:
               - column:
                   name: description
                   type: varchar(500)
-              - column:
-                  name: active
-                  type: boolean
-                  defaultValueBoolean: true
-                  constraints:
-                    nullable: false
 
   - changeSet:
       id: 003-create-bookings
@@ -106,9 +100,16 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+        - createIndex:
+            indexName: idx_booking_unit_dates
+            tableName: bookings
+            columns:
               - column:
-                  name: expires_at
-                  type: timestamp
+                  name: unit_id
+              - column:
+                  name: start_date
+              - column:
+                  name: end_date
 
         - addForeignKeyConstraint:
             baseTableName: bookings
@@ -199,21 +200,40 @@ databaseChangeLog:
       changes:
         - sql:
             sql: |
-              INSERT INTO units (id, rooms, type, floor, base_cost, description, active)
+              INSERT INTO users (id, email)
               VALUES
-              (gen_random_uuid(), 1, 'HOME', 1, 80.00, 'Small home unit', true),
-              (gen_random_uuid(), 2, 'FLAT', 2, 120.00, 'City flat', true),
-              (gen_random_uuid(), 3, 'APARTMENTS', 5, 200.00, 'Large apartments', true),
-              (gen_random_uuid(), 1, 'FLAT', 3, 90.00, 'Studio flat', true),
-              (gen_random_uuid(), 2, 'HOME', 1, 110.00, 'Comfort home', true),
-              (gen_random_uuid(), 4, 'APARTMENTS', 7, 250.00, 'Luxury apartments', true),
-              (gen_random_uuid(), 3, 'FLAT', 4, 160.00, 'Family flat', true),
-              (gen_random_uuid(), 2, 'HOME', 2, 100.00, 'Quiet home', true),
-              (gen_random_uuid(), 1, 'APARTMENTS', 6, 95.00, 'Budget apartments', true),
-              (gen_random_uuid(), 3, 'HOME', 1, 180.00, 'Spacious home', true);
+              (gen_random_uuid(), 'user1@mail.com'),
+              (gen_random_uuid(), 'user2@mail.com'),
+              (gen_random_uuid(), 'user3@mail.com'),
+              (gen_random_uuid(), 'user4@mail.com'),
+              (gen_random_uuid(), 'user5@mail.com'),
+              (gen_random_uuid(), 'user6@mail.com'),
+              (gen_random_uuid(), 'user7@mail.com'),
+              (gen_random_uuid(), 'user8@mail.com'),
+              (gen_random_uuid(), 'user9@mail.com'),
+              (gen_random_uuid(), 'user10@mail.com');
 
   - changeSet:
-      id: 007-insert-unit-events
+      id: 007-insert-initial-units
+      author: Oleksii Morenets
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO units (id, rooms, type, floor, base_cost, description)
+              VALUES
+              (gen_random_uuid(), 1, 'HOME', 1, 80.00, 'Small home unit'),
+              (gen_random_uuid(), 2, 'FLAT', 2, 120.00, 'City flat'),
+              (gen_random_uuid(), 3, 'APARTMENTS', 5, 200.00, 'Large apartments'),
+              (gen_random_uuid(), 1, 'FLAT', 3, 90.00, 'Studio flat'),
+              (gen_random_uuid(), 2, 'HOME', 1, 110.00, 'Comfort home'),
+              (gen_random_uuid(), 4, 'APARTMENTS', 7, 250.00, 'Luxury apartments'),
+              (gen_random_uuid(), 3, 'FLAT', 4, 160.00, 'Family flat'),
+              (gen_random_uuid(), 2, 'HOME', 2, 100.00, 'Quiet home'),
+              (gen_random_uuid(), 1, 'APARTMENTS', 6, 95.00, 'Budget apartments'),
+              (gen_random_uuid(), 3, 'HOME', 1, 180.00, 'Spacious home');
+
+  - changeSet:
+      id: 008-insert-unit-events
       author: Oleksii Morenets
       changes:
         - sql:

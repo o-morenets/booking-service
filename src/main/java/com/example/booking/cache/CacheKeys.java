@@ -4,5 +4,5 @@ public final class CacheKeys {
 
     private CacheKeys() {}
 
-    public static final String AVAILABLE_UNITS_COUNT = "available_units_count";
+    public static final String UNITS_AVAILABLE_TODAY = "units:available:today";
 }

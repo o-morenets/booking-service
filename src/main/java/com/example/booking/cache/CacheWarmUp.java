@@ -2,9 +2,9 @@ package com.example.booking.cache;
 
 import com.example.booking.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public class CacheWarmUp {
 
     @EventListener(ApplicationReadyEvent.class)
     public void rebuildCache() {
-        long actualAvailableUnits = unitRepository.countCurrentlyAvailable();
-        cacheService.rebuildAvailableUnits(actualAvailableUnits);
+        long countAvailableToday = unitRepository.countAvailableToday();
+        cacheService.setAvailableUnits(countAvailableToday);
     }
 }

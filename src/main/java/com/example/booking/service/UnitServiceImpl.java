@@ -1,55 +1,62 @@
 package com.example.booking.service;
 
+import com.example.booking.cache.AvailabilityCacheService;
+import com.example.booking.config.PaymentProperties;
 import com.example.booking.dto.CreateUnitRequest;
 import com.example.booking.dto.UnitResponse;
 import com.example.booking.entity.AccommodationType;
 import com.example.booking.entity.Booking;
-import com.example.booking.entity.EventType;
+import com.example.booking.entity.BookingStatus;
 import com.example.booking.entity.Unit;
 import com.example.booking.repository.UnitRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
+
+import static com.example.booking.entity.EventType.UNIT_CREATED;
 
 @Service
 @RequiredArgsConstructor
 public class UnitServiceImpl implements UnitService {
 
-    private static final BigDecimal MARKUP = BigDecimal.valueOf(1.15);
-
     private final UnitRepository unitRepository;
     private final EventService eventService;
+    private final AvailabilityCacheService cacheService;
+    private final PaymentProperties paymentProperties;
 
     @Override
+    @Transactional
     public UnitResponse createUnit(CreateUnitRequest request) {
         Unit unit = new Unit();
         unit.setRooms(request.rooms());
-        unit.setFloor(request.floor());
         unit.setType(AccommodationType.valueOf(request.type()));
+        unit.setFloor(request.floor());
         unit.setBaseCost(request.baseCost());
         unit.setDescription(request.description());
-        unit.setActive(true);
 
         Unit saved = unitRepository.save(unit);
 
         eventService.log(
-                EventType.UNIT_CREATED,
-                "Unit created with id=" + unit.getId()
+                UNIT_CREATED,
+                "Unit created, unitId=" + unit.getId()
         );
+
+        cacheService.incrementAvailableUnits();
 
         return toResponse(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UnitResponse> searchAvailable(
             Integer rooms,
             String type,
@@ -80,24 +87,30 @@ public class UnitServiceImpl implements UnitService {
                         predicate,
                         cb.lessThanOrEqualTo(
                                 root.get("baseCost"),
-                                maxCost.divide(MARKUP, 2, RoundingMode.HALF_UP)
+                                maxCost.subtract(
+                                        maxCost.multiply(paymentProperties.getMarkup())
+                                )
                         )
                 );
             }
 
+            if (startDate != null && endDate != null) {
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<Booking> booking = subquery.from(Booking.class);
 
-            Join<Unit, Booking> bookingJoin =
-                    root.join("bookings", JoinType.LEFT);
+                subquery.select(cb.literal(1L))
+                        .where(
+                                cb.equal(booking.get("unit"), root),
+                                booking.get("status").in(
+                                        BookingStatus.PENDING_PAYMENT,
+                                        BookingStatus.PAID
+                                ),
+                                cb.lessThan(booking.get("startDate"), endDate),
+                                cb.greaterThan(booking.get("endDate"), startDate)
+                        );
 
-            Predicate noOverlap = cb.or(
-                    cb.isNull(bookingJoin.get("id")),
-                    cb.or(
-                            cb.lessThan(bookingJoin.get("endDate"), startDate),
-                            cb.greaterThan(bookingJoin.get("startDate"), endDate)
-                    )
-            );
-
-            predicate = cb.and(predicate, noOverlap);
+                predicate = cb.and(predicate, cb.not(cb.exists(subquery)));
+            }
 
             return predicate;
         };
@@ -109,7 +122,7 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public long getAvailableUnitsCount() {
-        return unitRepository.countCurrentlyAvailable();
+        return cacheService.getAvailableUnitsCount();
     }
 
     private UnitResponse toResponse(Unit unit) {
@@ -118,7 +131,7 @@ public class UnitServiceImpl implements UnitService {
                 unit.getRooms(),
                 unit.getType().name(),
                 unit.getFloor(),
-                unit.getBaseCost().multiply(MARKUP),
+                unit.getBaseCost().add(unit.getBaseCost().multiply(paymentProperties.getMarkup())),
                 unit.getDescription()
         );
     }

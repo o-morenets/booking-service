@@ -30,8 +30,6 @@ public class Unit {
 
     private String description;
 
-    private boolean active = true;
-
     @OneToMany(mappedBy = "unit")
     private List<Booking> bookings;
 }

@@ -13,7 +13,6 @@ public record UnitResponse(
         BigDecimal totalCost,
         String description
 ) {
-
     public static UnitResponse from(Unit unit) {
         return new UnitResponse(
                 unit.getId(),

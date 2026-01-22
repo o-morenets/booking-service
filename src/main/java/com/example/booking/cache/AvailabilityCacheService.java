@@ -4,9 +4,9 @@ public interface AvailabilityCacheService {
 
     long getAvailableUnitsCount();
 
+    void setAvailableUnits(long actualValue);
+
     void incrementAvailableUnits();
 
     void decrementAvailableUnits();
-
-    void rebuildAvailableUnits(long actualValue);
 }

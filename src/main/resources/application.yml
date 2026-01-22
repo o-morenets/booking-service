@@ -22,3 +22,7 @@ spring:
 logging:
   level:
     org.hibernate.SQL: DEBUG
+
+booking:
+  payment:
+    markup: 0.15

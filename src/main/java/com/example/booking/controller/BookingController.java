@@ -30,12 +30,4 @@ public class BookingController {
     public void cancel(@PathVariable UUID bookingId) {
         bookingService.cancelBooking(bookingId);
     }
-
-    /**
-     * Emulate payment
-     */
-    @PostMapping("/{bookingId}/pay")
-    public void pay(@PathVariable UUID bookingId) {
-        bookingService.pay(bookingId);
-    }
 }

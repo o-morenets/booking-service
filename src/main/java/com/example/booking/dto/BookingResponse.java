@@ -13,9 +13,7 @@ public record BookingResponse(
         LocalDate startDate,
         LocalDate endDate,
         String status,
-        Instant createdAt,
-        Instant expiresAt
-
+        Instant createdAt
 ) {
     public static BookingResponse from(Booking booking) {
         return new BookingResponse(
@@ -25,8 +23,7 @@ public record BookingResponse(
                 booking.getStartDate(),
                 booking.getEndDate(),
                 booking.getStatus().name(),
-                booking.getCreatedAt(),
-                booking.getExpiresAt()
+                booking.getCreatedAt()
         );
     }
 }

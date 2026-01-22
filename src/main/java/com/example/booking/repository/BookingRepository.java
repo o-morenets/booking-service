@@ -13,7 +13,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     @Query("""
             SELECT b FROM Booking b
-            WHERE b.status = 'PENDING_PAYMENT' AND b.createdAt < :limit
+            WHERE b.status = 'PENDING_PAYMENT'
+                AND b.createdAt < :limit
             """)
     List<Booking> findExpired(Instant limit);
 
@@ -21,9 +22,9 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             SELECT CASE WHEN COUNT(b) = 0 THEN true ELSE false END
             FROM Booking b
             WHERE b.unit.id = :unitId
-              AND b.status <> 'CANCELLED'
-              AND b.startDate < :endDate
-              AND b.endDate > :startDate
+                AND b.status IN ('PENDING_PAYMENT', 'PAID')
+                AND b.startDate < :endDate
+                AND b.endDate > :startDate
             """)
     boolean isUnitAvailable(
             UUID unitId,

@@ -14,23 +14,23 @@ public class RedisAvailabilityCacheService implements AvailabilityCacheService {
 
     @Override
     public long getAvailableUnitsCount() {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(CacheKeys.AVAILABLE_UNITS_COUNT))
-                .map(v -> (Long) v)
+        return Optional.ofNullable(redisTemplate.opsForValue().get(CacheKeys.UNITS_AVAILABLE_TODAY))
+                .map(v -> ((Number) v).longValue())
                 .orElse(0L);
     }
 
     @Override
+    public void setAvailableUnits(long actualValue) {
+        redisTemplate.opsForValue().set(CacheKeys.UNITS_AVAILABLE_TODAY, actualValue);
+    }
+
+    @Override
     public void incrementAvailableUnits() {
-        redisTemplate.opsForValue().increment(CacheKeys.AVAILABLE_UNITS_COUNT, 1);
+        redisTemplate.opsForValue().increment(CacheKeys.UNITS_AVAILABLE_TODAY);
     }
 
     @Override
     public void decrementAvailableUnits() {
-        redisTemplate.opsForValue().decrement(CacheKeys.AVAILABLE_UNITS_COUNT, 1);
-    }
-
-    @Override
-    public void rebuildAvailableUnits(long actualValue) {
-        redisTemplate.opsForValue().set(CacheKeys.AVAILABLE_UNITS_COUNT, actualValue);
+        redisTemplate.opsForValue().decrement(CacheKeys.UNITS_AVAILABLE_TODAY);
     }
 }

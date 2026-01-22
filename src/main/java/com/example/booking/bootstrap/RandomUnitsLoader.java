@@ -1,7 +1,6 @@
 package com.example.booking.bootstrap;
 
 import com.example.booking.entity.AccommodationType;
-import com.example.booking.entity.EventType;
 import com.example.booking.entity.Unit;
 import com.example.booking.repository.UnitRepository;
 import com.example.booking.service.EventService;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.example.booking.entity.EventType.UNIT_CREATED;
 
 @Component
 @RequiredArgsConstructor
@@ -35,8 +36,8 @@ public class RandomUnitsLoader {
             unitRepository.save(unit);
 
             eventService.log(
-                    EventType.UNIT_CREATED,
-                    "Random unit created (id=" + unit.getId() + ")"
+                    UNIT_CREATED,
+                    "Random unit created, unitId=" + unit.getId()
             );
         }
     }
@@ -49,7 +50,6 @@ public class RandomUnitsLoader {
         unit.setType(randomAccommodationType());
         unit.setBaseCost(randomCost());
         unit.setDescription(randomDescription());
-        unit.setActive(true);
 
         return unit;
     }
