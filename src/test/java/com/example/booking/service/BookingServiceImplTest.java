@@ -231,7 +231,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void testCancelBooking_NotFound() {
+    void testCancelBooking_BookingNotFound() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 

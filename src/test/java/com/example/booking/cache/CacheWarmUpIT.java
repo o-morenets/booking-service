@@ -22,7 +22,9 @@ class CacheWarmUpIT {
     @Test
     void rebuildCache_onStartup() {
         Mockito.when(unitRepository.countAvailableToday()).thenReturn(10L);
+
         cacheWarmUp.rebuildCache();
+
         Mockito.verify(cacheService).setAvailableUnits(10L);
     }
 }

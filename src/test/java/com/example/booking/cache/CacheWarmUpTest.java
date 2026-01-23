@@ -13,7 +13,7 @@ class CacheWarmUpTest {
 
         Mockito.when(unitRepository.countAvailableToday()).thenReturn(42L);
 
-        CacheWarmUp cacheWarmUp = new CacheWarmUp(cacheService, unitRepository);
+        CacheWarmUp cacheWarmUp = new CacheWarmUp(unitRepository, cacheService);
         cacheWarmUp.rebuildCache();
 
         Mockito.verify(cacheService).setAvailableUnits(42L);

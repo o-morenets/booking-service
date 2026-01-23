@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CacheWarmUp {
 
-    private final AvailabilityCacheService cacheService;
     private final UnitRepository unitRepository;
+    private final AvailabilityCacheService cacheService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void rebuildCache() {
