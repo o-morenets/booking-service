@@ -48,13 +48,13 @@ public class PaymentServiceImpl implements PaymentService {
                 Instant.now()
         );
 
-        paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
 
         booking.setStatus(PAID);
 
         eventService.log(
                 PAYMENT_SUCCESS,
-                "Payment successful, paymentId=" + payment.getId()
+                "Payment successful, paymentId=" + saved.getId()
         );
     }
 }

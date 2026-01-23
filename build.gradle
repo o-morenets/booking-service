@@ -47,20 +47,20 @@ dependencies {
      * ========================= */
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
 
     /* =========================
      * Testing
      * ========================= */
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'junit', module: 'junit'
-    }
+    // Spring Boot Starter Test includes JUnit 5
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // Testcontainers
+    // Testcontainers BOM
     testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
     testImplementation 'org.testcontainers:postgresql:1.19.8'
-    testImplementation 'org.testcontainers:redis:1.19.8'
+
+    // Redis Testcontainers
+    testImplementation 'com.redis:testcontainers-redis:2.0.2'
 }
 
 tasks.withType(Test) {

@@ -47,7 +47,7 @@ public class UnitServiceImpl implements UnitService {
 
         eventService.log(
                 UNIT_CREATED,
-                "Unit created, unitId=" + unit.getId()
+                "Unit created, unitId=" + saved.getId()
         );
 
         cacheService.incrementAvailableUnits();
