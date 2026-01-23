@@ -54,7 +54,7 @@ dependencies {
      * Testing
      * ========================= */
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'junit', module: 'junit' // виключає JUnit 4
+        exclude group: 'junit', module: 'junit'
     }
 
     // Testcontainers
